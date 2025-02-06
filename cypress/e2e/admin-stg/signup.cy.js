@@ -1,5 +1,6 @@
 import {fakerPT_BR as faker} from '@faker-js/faker'
 import { cpf, celular} from 'gerador-br'
+/// <reference path="../../support/index.d.ts" />
 
 Cypress.on('uncaught:exception', (err, runnable) => {
     return false
@@ -53,7 +54,7 @@ Cypress.on('uncaught:exception', (err, runnable) => {
 
     })
 
-    it('Efetuar cadastro de novo usuário sem sucesso', () => {
+    it('Tentar cadastrar usuário sem informar os dados nos campos obrigatórios', () => {
       cy.userRegistrationFailure()
 
       //ASSERT
@@ -63,58 +64,61 @@ Cypress.on('uncaught:exception', (err, runnable) => {
         .should('have.text', 'Ops! Algo deu errado.')
     })
 
-    it('3 inputs em branco no campo nome deve apresentar mensagem de alerta para preenchimento', () => {
-      cy.get(':nth-child(2) > .flex-col > .relative').type(' ')
+    it('Tentar cadastrar usuário sem preencher o campo obrigatório nome', () => {
+      cy.get('[aria-label="Nome"]').type(' ')
 
       //ASSERT
-      cy.get('.h-full.flex > .flex-col')
+      cy.get('[data-slot="error-message"]')
         .should('have.text', 'Informe seu nome.')
       
     })
 
-    it('3 inputs em branco no campo sobrenome deve apresentar mensagem de alerta para preenchimento', () => {
-      cy.get(':nth-child(3) > .flex-col > .relative').type(' ')
+    it('Tentar cadastrar usuário sem preencher o campo obrigatório sobrenome', () => {
+      cy.get('[aria-label="Sobrenome"]').type(' ')
 
       //ASSERT
-      cy.get('.h-full.flex > .flex-col')
+      cy.get('[data-slot="error-message"]')
         .should('have.text', 'Informe seu sobrenome.') 
 
     })
 
-    it('3 inputs em branco no campo e-mail deve apresentar mensagem de alerta para preenchimento', () => {
-      cy.get(':nth-child(4) > .flex-col > .relative').type('   ')
+    it('Tentar cadastrar usuário sem preencher o campo obrigatório e-mail', () => {
+      cy.get('[aria-label="E-mail"]').type('   ')
 
       //ASSERT
-      cy.get('.h-full.flex > .flex-col')
+      cy.get('[data-slot="error-message"]')
         .should('have.text', 'Informe um e-mail válido.') 
 
     })
 
     it('Preencher e-mail inválido', () => {
-      cy.get(':nth-child(4) > .flex-col > .relative').type('stefany@teste.c')
+      cy.get('[aria-label="E-mail"]').type('stefany@teste.c')
 
       //ASSERT
-      cy.get('.h-full.flex > .flex-col').should('have.text', 'Informe um e-mail válido.') 
+      cy.get('[data-slot="error-message"]')
+      .should('have.text', 'Informe um e-mail válido.') 
 
     })
 
     it('Preencher número de celular inválido', () => {
-      cy.get(':nth-child(5) > .flex-col > .relative').type('119812124')
+      cy.get('[name="phone"]').type('119812124')
 
       //ASSERT
-      cy.get('.h-full.flex > .flex-col').should('have.text', 'Celular inválido') 
+      cy.get('[data-slot="error-message"]')
+      .should('have.text', 'Celular inválido') 
 
     })
 
-    it('3 inputs em branco no campo número de celular deve apresentar mensagem de alerta para preenchimento', () => {
-      cy.get(':nth-child(5) > .flex-col > .relative').type('119812124')
+    it('Tentar cadastrar usuário sem preencher o campo obrigatório número de celular', () => {
+      cy.get('[name="phone"]').type('119812124')
 
       //ASSERT
-      cy.get('.h-full.flex > .flex-col').should('have.text', 'Celular inválido') 
+      cy.get('[data-slot="error-message"]')
+      .should('have.text', 'Celular inválido') 
 
     })
 
-    it('Validar senha fraca e com pelo menos 1 número', () => {
+    it('Tentar cadastrar usuário com senha fraca e com pelo menos 1 número', () => {
       cy.passwordValidationWeakandMissingNumber(
 
       faker.person.firstName(),
@@ -131,7 +135,7 @@ Cypress.on('uncaught:exception', (err, runnable) => {
       
     })
 
-    it('Validar senha fraca e com pelo menos 1 letra maiúscula', () => {
+    it('Tentar cadastrar usuário com senha fraca e com pelo menos 1 letra maiúscula', () => {
       cy.validateWeakPasswordWithUppercase(
 
         faker.person.firstName(),
@@ -147,7 +151,7 @@ Cypress.on('uncaught:exception', (err, runnable) => {
       
     })
 
-    it('Validar senha média e com pelo menos 1 caractere especial', () => {
+    it('Tentar cadastrar usuário com senha média e com pelo menos 1 caractere especial', () => {
       cy.validateMediumPasswordWithSpecialCharacter(
 
         faker.person.firstName(),
@@ -162,7 +166,7 @@ Cypress.on('uncaught:exception', (err, runnable) => {
       
     })
 
-    it('Validar senha média e com no minimo 8 caracteres', () => {
+    it('Tentar cadastrar usuário com senha média e com no minimo 8 caracteres', () => {
       cy.validateMediumPasswordWithMinLength(
 
         faker.person.firstName(),
@@ -217,10 +221,10 @@ Cypress.on('uncaught:exception', (err, runnable) => {
           .should('have.text','Verifique seu e-mail')
 
         cy.wait(65000)
-        cy.contains('button', 'Editar').click()
-        cy.get('.group > .flex-col > .relative').click().clear()
-        cy.get('.group > .flex-col > .relative').type(faker.internet.password({lenght:10, prefix: '$'}))
-        cy.contains('button', 'Enviar').click()
+        cy.get('[type="button"]').click()
+        cy.get('[aria-label="E-mail"]').click().clear()
+        cy.get('[aria-label="E-mail"]').type(faker.internet.password({lenght:10, prefix: '$'}))
+        cy.get('[type="submit"]').click({ multiple: true })
 
       })
 
@@ -244,7 +248,7 @@ Cypress.on('uncaught:exception', (err, runnable) => {
 
 describe('Cadastro de novos compradores', () => {
 
-  it('Efetuar compra grátis com sucesso', () => {
+  it.only('Efetuar compra grátis com sucesso', () => {
     cy.registerNewBuyer(
 
       faker.person.fullName(),

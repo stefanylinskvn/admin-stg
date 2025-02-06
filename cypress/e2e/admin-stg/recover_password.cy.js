@@ -1,3 +1,5 @@
+/// <reference path="../../support/index.d.ts" />
+
 Cypress.on('uncaught:exception', (err, runnable) => {
   return false
   });
@@ -9,7 +11,7 @@ beforeEach(() => {
 describe('Recuperação de senhas', () => {
 
   it('Recuperar conta com sucesso', () => {
-    cy.recoverAccountSuccesfully()
+    cy.succesfullyRecoverAccount()
 
     //ASSERT
     cy.get('.space-y-3 > .font-bold')
@@ -22,7 +24,20 @@ describe('Recuperação de senhas', () => {
 
   })
 
-  it('Redefinir senha fraca e com pelo menos 1 número', () => {
+  it.only('Tentar recuperar senha com campos vazios', () => {
+    cy.resetPasswordWithEmptyFields()
+
+    //ASSERT
+    cy.get('.space-y-1 > .antialiased.font-normal')
+      .should('be.visible', 'Senha deve conter pelo menos 1 número.')
+    //Fazer melhoria para não aceitar espaçõs vazios inseridos pelo teclado, para apresentar corretamente a mensagem: Preencha a sua nova senha.
+
+    cy.get('[type="submit"]')
+    .should('be.disabled')
+
+  })
+
+  it('Validar senha fraca com pelo menos 1 número', () => {
     cy.resetPasswordWithWeakAndValidPasswords()
 
     //ASSERT
@@ -37,14 +52,14 @@ describe('Recuperação de senhas', () => {
     cy.resetPasswordWithMismatchedPasswords()
 
     //ASSERT
-    cy.get('.h-full.flex > .flex-col')
+    cy.get('[data-slot="error-message"]')
       .should('have.text', 'Senha e confirmação não são iguais.')
     cy.get('.flex.transition > .antialiased')
       .should('have.text', 'Fraca')
 
   })
 
-  it('Redefinir senha média e com pelo menos 1 letra maiúscula', () => {
+  it('Validar senha média com pelo menos 1 letra maiúscula', () => {
     cy.resetPasswordWithMediumStrengthAndAtLeastOneUppercaseLetter()
 
     //ASSERT
@@ -55,7 +70,7 @@ describe('Recuperação de senhas', () => {
 
   })
 
-  it('Redefinir senha média e com pelo menos 1 caractere especial', () => {
+  it('Validar senha média com pelo menos 1 caractere especial', () => {
     cy.resetPasswordWithMediumStrengthAndAtLeastOneSpecialCharacter()
 
     //ASSERT

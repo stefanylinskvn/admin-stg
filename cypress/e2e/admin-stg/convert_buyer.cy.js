@@ -1,4 +1,5 @@
 /// <reference types="cypress"/>
+/// <reference path="../../support/index.d.ts" />
 
 Cypress.on('uncaught:exception', (err, runnable) => {
     return false
@@ -11,13 +12,13 @@ Cypress.on('uncaught:exception', (err, runnable) => {
   describe('Converter usuário comprador em vendedor', () => {
   
     it('Converter usuário comprador com sucesso', () => {
-      cy.loginConvertBuyer()
+      cy.buyerConvertLogin()
 
       //ASSERT
       cy.get('.c-iZJxHN > .antialiased > span')
         .should('have.text', 'Compras')
 
-      cy.convertBuyerToSeller()
+      cy.buyerConvertToSeller()
       // Refazer um novo usuário de comprador para o teste
         
     })

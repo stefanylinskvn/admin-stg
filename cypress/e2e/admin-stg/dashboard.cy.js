@@ -1,3 +1,5 @@
+/// <reference path="../../support/index.d.ts" />
+
 Cypress.on('uncaught:exception', (err, runnable) => {
     return false
     });
@@ -9,7 +11,7 @@ Cypress.on('uncaught:exception', (err, runnable) => {
   describe('Dashboard', () => {
   
     it('Visualizar Dashboard', () => {
-     cy.loginSeller()
+     cy.sellerLogin()
 
      // 7 dias true   
      cy.get('.c-dzlBKm-jvimYT-active-true') 
